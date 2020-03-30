@@ -2,11 +2,11 @@
  * Copyright: JessMA Open Source (ldcsaa@gmail.com)
  *
  * Author	: Bruce Liang
- * Website	: http://www.jessma.org
- * Project	: https://github.com/ldcsaa
+ * Website	: https://github.com/ldcsaa
+ * Project	: https://github.com/ldcsaa/HP-Socket
  * Blog		: http://www.cnblogs.com/ldcsaa
  * Wiki		: http://www.oschina.net/p/hp-socket
- * QQ Group	: 75375912, 44636872
+ * QQ Group	: 44636872, 75375912
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -751,12 +751,12 @@ BOOL CCookieMgr::SetCookieNoLock(const CCookie& cookie, BOOL bOnlyUpdateValueIfE
 	CCookieDomainMapI it = m_cookies.find(cookie.domain);
 
 	if(it == m_cookies.end())
-		it = m_cookies.emplace(move(CCookieDomainMap::value_type(cookie.domain, move(CCookiePathMap())))).first;
+		it = m_cookies.emplace(CCookieDomainMap::value_type(cookie.domain, CCookiePathMap())).first;
 
 	CCookiePathMapI it2 = it->second.find(cookie.path);
 
 	if(it2 == it->second.end())
-		it2 = it->second.emplace(move(CCookiePathMap::value_type(cookie.path, move(CCookieSet())))).first;
+		it2 = it->second.emplace(CCookiePathMap::value_type(cookie.path, CCookieSet())).first;
 
 	CCookieSet& cookies	= it2->second;
 	CCookieSetI it3		= cookies.find(cookie);
