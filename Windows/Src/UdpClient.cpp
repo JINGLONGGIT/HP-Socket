@@ -27,7 +27,7 @@
 
 #ifdef _UDP_SUPPORT
 
-const CInitSocket& CUdpClient::sm_wsSocket = CInitSocket::Instance();
+const CInitSocket CUdpClient::sm_wsSocket;
 
 BOOL CUdpClient::Start(LPCTSTR lpszRemoteAddress, USHORT usPort, BOOL bAsyncConnect, LPCTSTR lpszBindAddress, USHORT usLocalPort)
 {
@@ -520,6 +520,8 @@ BOOL CUdpClient::ReadData()
 
 			if(code == WSAEWOULDBLOCK)
 				break;
+			else if(IS_UDP_RESET_ERROR(code))
+				continue;
 			else
 			{
 				m_ccContext.Reset(TRUE, SO_RECEIVE, code);

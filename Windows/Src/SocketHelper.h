@@ -134,21 +134,10 @@
 class CInitSocket
 {
 public:
-	static const CInitSocket& Instance()
-	{
-		static CInitSocket s_wsSocket;
-
-		return s_wsSocket;
-	}
-
-public:
-	int	 GetResult() const {return m_iResult;}
-	BOOL IsValid()	 const {return m_iResult == 0;}
-
-private:
 	CInitSocket(LPWSADATA lpWSAData = nullptr, BYTE minorVersion = 2, BYTE majorVersion = 2)
 	{
 		LPWSADATA lpTemp = lpWSAData;
+
 		if(!lpTemp)
 			lpTemp	= CreateLocalObject(WSADATA);
 
@@ -160,6 +149,9 @@ private:
 		if(IsValid())
 			::WSACleanup();
 	}
+
+	int	 GetResult() const {return m_iResult;}
+	BOOL IsValid()	 const {return m_iResult == 0;}
 
 private:
 	int m_iResult;
@@ -406,7 +398,8 @@ template<class T> struct TBufferObjBase
 		return cat;
 	}
 
-	void Reset()	{::ZeroMemory(&ov, sizeof(ov)); buff.len = 0;}
+	void ResetOV()	{::ZeroMemory(&ov, sizeof(ov));}
+	void Reset()	{ResetOV(); buff.len = 0;}
 	int Remain()	{return capacity - buff.len;}
 	BOOL IsFull()	{return Remain() == 0;}
 };
@@ -946,11 +939,14 @@ int SSO_UDP_ConnReset		(SOCKET sock, BOOL bNewBehavior = TRUE);
 ************************************************************************/
 
 /* 检测 IOCP 操作返回值：NO_ERROR 则返回 TRUE */
-#define IOCP_NO_ERROR(result)	(result == NO_ERROR)
+#define IOCP_NO_ERROR(rs)		((rs) == NO_ERROR)
 /* 检测 IOCP 操作返回值：WSA_IO_PENDING 则返回 TRUE */
-#define IOCP_PENDING(result)	(result == WSA_IO_PENDING)
+#define IOCP_PENDING(rs)		((rs) == WSA_IO_PENDING)
 /* 检测 IOCP 操作返回值：NO_ERROR 或 WSA_IO_PENDING 则返回 TRUE */
-#define IOCP_SUCCESS(result)	(IOCP_NO_ERROR(result) || IOCP_PENDING(result))
+#define IOCP_SUCCESS(rs)		(IOCP_NO_ERROR(rs) || IOCP_PENDING(rs))
+
+/* 检查是否 UDP RESET 错误 */
+#define IS_UDP_RESET_ERROR(rs)	((rs) == WSAENETRESET || (rs) == WSAECONNRESET)
 
 /* 生成 Connection ID */
 CONNID GenerateConnectionID	();
